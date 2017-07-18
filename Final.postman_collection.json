@@ -1,0 +1,245 @@
+{
+	"variables": [],
+	"info": {
+		"name": "GIT Final",
+		"_postman_id": "e31f28f7-231d-bea9-56d2-ed5468394d28",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET all commits from repo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Content-Type is present\"] = postman.getResponseHeader(\"Content-Type\");",
+							"tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+							"tests[\"Commit is present\"] = responseBody.has(\"commit\");",
+							"tests[\"Author is present\"] = responseBody.has(\"author\");",
+							"tests[\"SHA is present\"] = responseBody.has(\"sha\");",
+							"",
+							"var third_commit_sha = \"60b95a435b8dfb5bd3e22149ef7db0f6a595940d\";",
+							"var first_commit_sha = \"3293c06e7ba2a3a121baf39c2609711cd99cc1bf\";",
+							"var first_commit_message = \"first test commit\";",
+							"var test_user_name = \"anastasia127\";",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Third commit sha is \"+ jsonData[1].sha] = jsonData[1].sha == third_commit_sha;",
+							"tests[\"First commit sha is \"+ jsonData[4].sha] = jsonData[4].sha == first_commit_sha;",
+							"tests[\"First commit message is \"+jsonData[4].commit.message] = jsonData[4].commit.message == first_commit_message;",
+							"tests[\"First commit author is \"+jsonData[4].commit.author.name] = jsonData[4].commit.author.name == test_user_name;",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{url}}",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YW5hc3Rhc2lhMTI3OjEyM1NsaXBrbm90IQ==",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Should GET all commits fro repo"
+			},
+			"response": []
+		},
+		{
+			"name": "GET commit with sha",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var test_file_name = \"HelloWorld.php\";",
+							"var test_sha = \"ef3fcd9c9737a6c6311b5426f6b35da8e67d8396\";",
+							"var test_user_id = \"19407430\";",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"commit sha is \"+ jsonData.sha] =jsonData.sha == test_sha;",
+							"tests[\"commit file is \" + jsonData.files[0].filename] =jsonData.files[0].filename == test_file_name;",
+							"tests[\"commit file author id is \" + jsonData.author.id] =jsonData.author.id == test_user_id;",
+							"",
+							"postman.clearGlobalVariable(\"variable_key\");"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "{{url}}/:sha",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						":sha"
+					],
+					"query": [],
+					"variable": [
+						{
+							"key": "sha",
+							"value": "ef3fcd9c9737a6c6311b5426f6b35da8e67d8396"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YW5hc3Rhc2lhMTI3OjEyM1NsaXBrbm90IQ==",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Should GET a commit using sha"
+			},
+			"response": []
+		},
+		{
+			"name": "GET commit with incorrect sha",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 404\"] = responseCode.code === 404;",
+							"",
+							"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "{{url}}/:sha",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						":sha"
+					],
+					"query": [],
+					"variable": [
+						{
+							"key": "sha",
+							"value": ""
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YW5hc3Rhc2lhMTI3OjEyM1NsaXBrbm90IQ==",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Should Not GET a commit using incorrect sha"
+			},
+			"response": []
+		},
+		{
+			"name": "GET commit with sha wrong credentials",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 401\"] = responseCode.code === 401;",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "{{url}}/:sha",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						":sha"
+					],
+					"query": [],
+					"variable": [
+						{
+							"key": "sha",
+							"value": "ef3fcd9c9737a6c6311b5426f6765da8e67d8396"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YW5hczEyNzoxMjNTbGlwa24=",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Should Not GET a commit using wrong credemtials"
+			},
+			"response": []
+		},
+		{
+			"name": "GET commit with sha since date",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "{{url}}?since=2017-07-17T11:20:32Z",
+					"host": [
+						"{{url}}"
+					],
+					"query": [
+						{
+							"key": "since",
+							"value": "2017-07-17T11:20:32Z",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YW5hc3Rhc2lhMTI3OjEyM1NsaXBrbm90IQ==",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Should GET a commit since a specified date"
+			},
+			"response": []
+		}
+	]
+}
